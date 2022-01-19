@@ -4,41 +4,28 @@ push $cut_paste_input
 Group {
  name AOV_Layer_Contact_Sheet
  selected true
- xpos -389
- ypos -38
+ xpos -85070
+ ypos -13765
  addUserKnob {20 User}
  addUserKnob {26 aov_layer_contact_sheet l "AOV Contact Sheet"}
- addUserKnob {41 format l Format T Reformat1.format}
- addUserKnob {41 first_frame l "Display Frame" t "Choose a Frame that make the render layer most visble" T FrameHold2.first_frame}
- addUserKnob {41 addlayer l "Create AOV Layer Names" T AOV_Layer_Name_Generator.addlayer}
- addUserKnob {41 frame l "Output Frame" T Frame_Controller.frame}
- addUserKnob {41 set_frame l "Set Output Frame" T Frame_Controller.set_frame}
+ addUserKnob {20 RLs l "Render Layer Setup" n 1}
+ addUserKnob {41 format l Format t "Reformat AOV contact sheet to match plate formatting" T Reformat1.format}
+ addUserKnob {41 first_frame l "Display Frame" t "Choose a frame that clearly displays the renderlayer in the scene" T FrameHold2.first_frame}
+ addUserKnob {20 endGroup n -1}
+ addUserKnob {26 ""}
+ addUserKnob {20 render l "Render Settings" n 1}
+ addUserKnob {41 before l "Before Output Frame" t "Settings to change how the contact sheet is displayed before the output frame" T Retime1.before}
+ addUserKnob {41 frame l "Output Frame" t "Displays the current frame the contact sheet will be rendered on" T Frame_Controller.frame}
+ addUserKnob {41 set_frame l "Set Output Frame" t "Sets the frame the contact sheet will render on" T Frame_Controller.set_frame}
+ addUserKnob {20 endGroup_1 n -1}
+ addUserKnob {26 ""}
+ addUserKnob {20 aovlabels l "AOV Label Settings" n 1}
+ addUserKnob {41 addlayer l "Create AOV Layer Names" t "Creates labels for all the AOVs in the EXR render layer" T AOV_Layer_Name_Generator.addlayer}
  addUserKnob {26 color_1 l "Render Layer Color"}
- addUserKnob {41 color l "Text Color" T Constant1.color}
+ addUserKnob {41 color l "Text Color" t "Change the color of the renderlayer label" T Constant1.color}
+ addUserKnob {20 endGroup_2 n -1}
  addUserKnob {6 nukelayernames l "layernames " +INVISIBLE +STARTLINE}
 }
- Text {
-  inputs 0
-  cliptype union
-  message "\[file rootname \[file rootname \[file tail \[value \[topnode this.parent.input].file]]]]"
-  font "C:/Program Files/Nuke12.2v4/plugins/fonts/Courier.pfa"
-  size 100
-  xjustify right
-  yjustify bottom
-  Transform 1
-  translate {3800 30}
-  scale 1.5
-  name Text1
-  xpos -866
-  ypos -306
- }
- Constant {
-  inputs 0
-  color {0 0.495 1.357027 0}
-  name Constant1
-  xpos -1268
-  ypos -330
- }
  Input {
   inputs 0
   name Crypto_Obj
@@ -86,9 +73,45 @@ add_layer {CryptoMesh CryptoMesh.red CryptoMesh.green CryptoMesh.blue CryptoMesh
   xpos -1030
   ypos -577
  }
-set Nffb2e800 [stack 0]
+set N3250b800 [stack 0]
+ Dot {
+  name Dot1
+  xpos -340
+  ypos -560
+ }
+ NoOp {
+  name AOV_Layer_Name_Generator
+  xpos -370
+  ypos -515
+  addUserKnob {20 User}
+  addUserKnob {22 addlayer l "Layer Names" T "import nuke as nuke\n\nn = nuke.thisNode()\n\nlayerNameMerge = nuke.toNode(\"AOV_Contactsheet\")\n\ntext_merge = nuke.toNode(\"Text_merge\")\n\nbbox = n.bbox()\n\nlayers = set(\[i.split('.')\[0] for i in n.channels()])\n\nremoveNode = nuke.nodes.Remove()\n\nremoveNode.setInput(0, n)\n\ninNode = removeNode\n\n# create text per layer\n\nfor layer in layers:\n    textNode = nuke.nodes.Text2()\n    textNode\['box'].setValue((bbox.x(), bbox.y(), bbox.x() + bbox.w(), bbox.y() + bbox.h()))\n    textNode\['output'].setValue(layer)\n    textNode\['message'].setValue(layer)\n    textNode\['font_size'].setValue(100)\n    textNode\['global_font_scale'].setValue(1.5)\n    textNode\['xjustify'].setValue(\"left\")\n    textNode\['yjustify'].setValue(\"bottom\")\n    textNode.setInput(0, inNode)\n\n    inNode = textNode\n\n# create contact sheet for text\n\nlayerCC2 = nuke.nodes.LayerContactSheet()\nlayerCC2.knob('showLayerNames').setExpression('parent.nukelayernames')\nlayerCC2.knob('width').setExpression('parent.AOV_Contactsheet.knob.width')\nlayerCC2.knob('height').setExpression('parent.AOV_Contactsheet.knob.height')\nlayerCC2.knob(\"gap\").setValue(1)\nlayerCC2.setInput(0, inNode)\n\n# use Saturation node to show text in all channels\n\nsatNode = nuke.nodes.Saturation(channels='all', saturation=0, mode='Maximum')\n\nsatNode.setInput(0, layerCC2)\n\nmergeNode = nuke.nodes.Merge()\n\nmergeNode.setInput(0, layerNameMerge)\n\nmergeNode.setInput(1, satNode)\n\ntext_merge.setInput(0, mergeNode)\n" +STARTLINE}
+ }
+ Text {
+  inputs 0
+  cliptype none
+  message "\[file rootname \[file rootname \[file tail \[value \[topnode this.parent.input].file]]]]"
+  font "C:/Program Files/Nuke12.2v4/plugins/fonts/Courier.pfa"
+  size 100
+  xjustify right
+  yjustify bottom
+  Transform 1
+  box {0 0 -3800 500}
+  translate {3800 30}
+  scale 1.5
+  name Text1
+  xpos -866
+  ypos -306
+ }
+ Constant {
+  inputs 0
+  color {0 0.495 1.357027 0}
+  name Constant1
+  xpos -1268
+  ypos -330
+ }
+push $N3250b800
  FrameHold {
-  first_frame 1001
+  first_frame 1
   name FrameHold2
   xpos -1030
   ypos -503
@@ -100,8 +123,9 @@ set Nffb2e800 [stack 0]
   height 2160
   gap 1
   center true
-  showLayerNames {{parent.nukelayernames x1 1 x1001 1 x1431 1}}
+  showLayerNames {{parent.nukelayernames x101 1 x1001 1 x1431 1 x1432 1 1}}
   name AOV_Contactsheet
+  selected true
   xpos -1030
   ypos -429
  }
@@ -122,7 +146,6 @@ set Nffb2e800 [stack 0]
   input.last 1
   output.last {{parent.Frame_Controller.knob.frame}}
   output.last_lock true
-  before black
   after black
   time ""
   name Retime1
@@ -140,21 +163,8 @@ set Nffb2e800 [stack 0]
   xpos -871
   ypos -165
   addUserKnob {20 User}
-  addUserKnob {22 set_frame l Set_Frame T "import nuke\n\nroot = nuke.Root()\ntn = nuke.thisNode()\nlast = root.lastFrame()\nnodelist = \[]\noffset = 0\n\nwith root:\n    for node in nuke.allNodes('Group'):\n        if \"AOV_Layer_Contact_Sheet\" in node.name():\n            nodelist.append(node.fullName())\n    nodelist.sort()\n\n    sn = nuke.selectedNode()\n    for i, node in enumerate(nodelist):\n        if str(sn.name()) == nodelist\[i]:\n            offset = (i + 1)\n            print sn.name()\n            print i\n\nl_frame = offset + last\ntn.knob('frame').setValue(l_frame)\n\nprint nodelist\nprint offset\nprint l_frame" +STARTLINE}
+  addUserKnob {22 set_frame l Set_Frame T "import nuke\n\nroot = nuke.Root()\ntn = nuke.thisNode()\nlast = root.lastFrame()\nnodelist = \[]\noffset = 1\n\nwith root:\n    for node in nuke.allNodes('Group'):\n        if \"AOV_Layer_Contact_Sheet\" in node.name():\n            nodelist.append(node.fullName())\n    nodelist.sort()\n\n    sn = nuke.selectedNode()\n    for i, node in enumerate(nodelist):\n        if str(sn.name()) == nodelist\[i]:\n            offset = (i + 1)\n            print sn.name()\n            print i\n\nl_frame = offset + last\ntn.knob('frame').setValue(l_frame)\n\nprint nodelist\nprint offset\nprint l_frame" +STARTLINE}
   addUserKnob {3 frame l Frame}
   frame 1
- }
-push $Nffb2e800
- Dot {
-  name Dot1
-  xpos -340
-  ypos -560
- }
- NoOp {
-  name AOV_Layer_Name_Generator
-  xpos -370
-  ypos -515
-  addUserKnob {20 User}
-  addUserKnob {22 addlayer l "Layer Names" T "import nuke as nuke\n\nn = nuke.thisNode()\n\nlayerNameMerge = nuke.toNode(\"AOV_Contactsheet\")\n\ntext_merge = nuke.toNode(\"Text_merge\")\n\nbbox = n.bbox()\n\nlayers = set(\[i.split('.')\[0] for i in n.channels()])\n\nremoveNode = nuke.nodes.Remove()\n\nremoveNode.setInput(0, n)\n\ninNode = removeNode\n\n# create text per layer\n\nfor layer in layers:\n    textNode = nuke.nodes.Text2()\n    textNode\['box'].setValue((bbox.x(), bbox.y(), bbox.x() + bbox.w(), bbox.y() + bbox.h()))\n    textNode\['output'].setValue(layer)\n    textNode\['message'].setValue(layer)\n    textNode\['font_size'].setValue(100)\n    textNode\['global_font_scale'].setValue(2)\n    textNode\['xjustify'].setValue(\"left\")\n    textNode\['yjustify'].setValue(\"bottom\")\n    textNode.setInput(0, inNode)\n\n    inNode = textNode\n\n# create contact sheet for text\n\nlayerCC2 = nuke.nodes.LayerContactSheet()\nlayerCC2.knob('showLayerNames').setExpression('parent.nukelayernames')\nlayerCC2.knob('width').setExpression('parent.AOV_Contactsheet.knob.width')\nlayerCC2.knob('height').setExpression('parent.AOV_Contactsheet.knob.height')\nlayerCC2.setInput(0, inNode)\n\n# use Saturation node to show text in all channels\n\nsatNode = nuke.nodes.Saturation(channels='all', saturation=0, mode='Maximum')\n\nsatNode.setInput(0, layerCC2)\n\nmergeNode = nuke.nodes.Merge()\n\nmergeNode.setInput(0, layerNameMerge)\n\nmergeNode.setInput(1, satNode)\n\ntext_merge.setInput(0, mergeNode)\n" +STARTLINE}
  }
 end_group

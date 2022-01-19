@@ -24,7 +24,7 @@ for layer in layers:
     textNode['output'].setValue(layer)
     textNode['message'].setValue(layer)
     textNode['font_size'].setValue(100)
-    textNode['global_font_scale'].setValue(2)
+    textNode['global_font_scale'].setValue(1.5)
     textNode['xjustify'].setValue("left")
     textNode['yjustify'].setValue("bottom")
     textNode.setInput(0, inNode)
@@ -37,6 +37,7 @@ layerCC2 = nuke.nodes.LayerContactSheet()
 layerCC2.knob('showLayerNames').setExpression('parent.nukelayernames')
 layerCC2.knob('width').setExpression('parent.AOV_Contactsheet.knob.width')
 layerCC2.knob('height').setExpression('parent.AOV_Contactsheet.knob.height')
+layerCC2.knob("gap").setValue(1)
 layerCC2.setInput(0, inNode)
 
 # use Saturation node to show text in all channels

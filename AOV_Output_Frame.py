@@ -4,7 +4,7 @@ root = nuke.Root()
 tn = nuke.thisNode()
 last = root.lastFrame()
 nodelist = []
-offset = 0
+offset = 1
 
 with root:
     for node in nuke.allNodes('Group'):
