@@ -16,12 +16,16 @@ with root:
     for i, node in enumerate(nodelist):
         if str(sn.name()) == nodelist[i]:
             offset = (i + 1)
-            print sn.name()
-            print i
+            print '[Info]Selected Node {sn}'.format(sn=sn.name())
+            print '[Info]Index {i}'.format(i=i)
+    with nuke.toNode(sn.name()):
+        n = nuke.toNode('Retime1')
+        n.knob('before').setValue('black')
 
 l_frame = offset + last
 tn.knob('frame').setValue(l_frame)
 
-print nodelist
-print offset
-print l_frame
+print '[Info]Nodelist {nodelist}'.format(nodelist=nodelist)
+print '[Info]Offset {offset}'.format(offset=offset)
+print '[Info]Last Frame {l_frame}'.format(l_frame=l_frame)
+

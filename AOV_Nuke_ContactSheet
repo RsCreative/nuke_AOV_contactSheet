@@ -4,8 +4,8 @@ push $cut_paste_input
 Group {
  name AOV_Layer_Contact_Sheet
  selected true
- xpos 590
- ypos -36
+ xpos -85130
+ ypos -13565
  addUserKnob {20 User}
  addUserKnob {26 aov_layer_contact_sheet l "AOV Contact Sheet"}
  addUserKnob {20 RLs l "Render Layer Setup" n 1}
@@ -14,9 +14,8 @@ Group {
  addUserKnob {20 endGroup n -1}
  addUserKnob {26 ""}
  addUserKnob {20 render l "Render Settings" n 1}
- addUserKnob {41 before l "Before Output Frame" t "Settings to change how the contact sheet is displayed before the output frame" T Retime1.before}
- addUserKnob {41 frame l "Output Frame" t "Displays the current frame the contact sheet will be rendered on" T Frame_Controller.frame}
  addUserKnob {41 set_frame l "Set Output Frame" t "Sets the frame the contact sheet will render on" T Frame_Controller.set_frame}
+ addUserKnob {41 frame l "Output Frame" t "Displays the current frame the contact sheet will be rendered on" T Frame_Controller.frame}
  addUserKnob {20 endGroup_1 n -1}
  addUserKnob {26 ""}
  addUserKnob {20 aovlabels l "AOV Label Settings" n 1}
@@ -73,7 +72,7 @@ add_layer {CryptoMesh CryptoMesh.red CryptoMesh.green CryptoMesh.blue CryptoMesh
   xpos -1030
   ypos -577
  }
-set N50492000 [stack 0]
+set N1b22e000 [stack 0]
  Dot {
   name Dot1
   xpos -340
@@ -108,7 +107,7 @@ set N50492000 [stack 0]
   xpos -1268
   ypos -330
  }
-push $N50492000
+push $N1b22e000
  FrameHold {
   first_frame 1
   name FrameHold2
@@ -122,7 +121,7 @@ push $N50492000
   height 2160
   gap 1
   center true
-  showLayerNames {{parent.nukelayernames x1 1 x101 1 x1001 1 x1022 1 x1024 1 x1025 1 1 x1117 1 x1118 1 x1431 1 x1432 1 1}}
+  showLayerNames {{parent.nukelayernames x1 1 x101 1 x1001 1 x1022 1 x1024 1 x1025 1 x1117 1 x1118 1 x1431 1 x1432 1 1}}
   name AOV_Contactsheet
   xpos -1030
   ypos -429
@@ -142,6 +141,7 @@ push $N50492000
  }
  Retime {
   input.last 1
+  output.first 1432
   output.last {{parent.Frame_Controller.knob.frame}}
   output.last_lock true
   after black
@@ -158,10 +158,11 @@ push $N50492000
  NoOp {
   inputs 0
   name Frame_Controller
+  selected true
   xpos -871
   ypos -165
   addUserKnob {20 User}
-  addUserKnob {22 set_frame l Set_Frame T "import nuke\n\nroot = nuke.Root()\ntn = nuke.thisNode()\nlast = root.lastFrame()\nnodelist = \[]\noffset = 0\n\nwith root:\n    for node in nuke.allNodes('Group'):\n        if \"AOV_Layer_Contact_Sheet\" in node.name():\n            nodelist.append(node.fullName())\n    nodelist.sort()\n\n    sn = nuke.selectedNode()\n    for i, node in enumerate(nodelist):\n        if str(sn.name()) == nodelist\[i]:\n            offset = (i + 1)\n            print sn.name()\n            print i\n\nl_frame = offset + last\ntn.knob('frame').setValue(l_frame)\n\nprint nodelist\nprint offset\nprint l_frame\n" +STARTLINE}
+  addUserKnob {22 set_frame l Set_Frame T "import nuke\n\nroot = nuke.Root()\ntn = nuke.thisNode()\nlast = root.lastFrame()\nnodelist = \[]\noffset = 0\n\nwith root:\n    for node in nuke.allNodes('Group'):\n        if \"AOV_Layer_Contact_Sheet\" in node.name():\n            nodelist.append(node.fullName())\n    nodelist.sort()\n\n    sn = nuke.selectedNode()\n    for i, node in enumerate(nodelist):\n        if str(sn.name()) == nodelist\[i]:\n            offset = (i + 1)\n            print '\[Info]Selected Node \{sn\}'.format(sn=sn.name())\n            print '\[Info]Index \{i\}'.format(i=i)\n    with nuke.toNode(sn.name()):\n        n = nuke.toNode('Retime1')\n        n.knob('before').setValue('black')\n\nl_frame = offset + last\ntn.knob('frame').setValue(l_frame)\n\nprint '\[Info]Nodelist \{nodelist\}'.format(nodelist=nodelist)\nprint '\[Info]Offset \{offset\}'.format(offset=offset)\nprint '\[Info]Last Frame \{l_frame\}'.format(l_frame=l_frame)\n\n" +STARTLINE}
   addUserKnob {3 frame l Frame}
   frame 1
  }
