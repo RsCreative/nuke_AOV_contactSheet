@@ -6,6 +6,7 @@ last = root.lastFrame()
 nodelist = []
 offset = 0
 
+tn['selected'].setValue(False)
 with root:
     for node in nuke.allNodes('Group'):
         if "AOV_Layer_Contact_Sheet" in node.name():
@@ -20,12 +21,16 @@ with root:
             print '[Info]Index {i}'.format(i=i)
     with nuke.toNode(sn.name()):
         n = nuke.toNode('Retime1')
+        n.showControlPanel()
         n.knob('before').setValue('black')
+        n.knob('after').setValue('black')
+        n.hideControlPanel()
+
 
 l_frame = offset + last
 tn.knob('frame').setValue(l_frame)
 
 print '[Info]Nodelist {nodelist}'.format(nodelist=nodelist)
 print '[Info]Offset {offset}'.format(offset=offset)
-print '[Info]Last Frame {l_frame}'.format(l_frame=l_frame)
+print '[Info]Output Frame {l_frame}'.format(l_frame=l_frame)
 
