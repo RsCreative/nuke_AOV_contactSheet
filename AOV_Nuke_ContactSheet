@@ -72,7 +72,7 @@ add_layer {CryptoMesh CryptoMesh.red CryptoMesh.green CryptoMesh.blue CryptoMesh
   xpos -1030
   ypos -577
  }
-set N62ae000 [stack 0]
+set Nf416cc00 [stack 0]
  Dot {
   name Dot1
   xpos -340
@@ -107,7 +107,7 @@ set N62ae000 [stack 0]
   xpos -1268
   ypos -330
  }
-push $N62ae000
+push $Nf416cc00
  FrameHold {
   first_frame 1
   name FrameHold2
@@ -141,8 +141,11 @@ push $N62ae000
  }
  Retime {
   input.last 1
+  output.first 1432
   output.last {{parent.Frame_Controller.knob.frame}}
   output.last_lock true
+  before black
+  after black
   time ""
   name Retime1
   xpos -1030
@@ -159,7 +162,7 @@ push $N62ae000
   xpos -871
   ypos -165
   addUserKnob {20 User}
-  addUserKnob {22 set_frame l Set_Frame T "import nuke\n\nroot = nuke.Root()\ntn = nuke.thisNode()\nlast = root.lastFrame()\nnodelist = \[]\noffset = 0\n\ntn\['selected'].setValue(False)\nwith root:\n    for node in nuke.allNodes('Group'):\n        if \"AOV_Layer_Contact_Sheet\" in node.name():\n            nodelist.append(node.fullName())\n    nodelist.sort()\n\n    sn = nuke.selectedNode()\n    for i, node in enumerate(nodelist):\n        if str(sn.name()) == nodelist\[i]:\n            offset = (i + 1)\n            print '\[Info]Selected Node \{sn\}'.format(sn=sn.name())\n            print '\[Info]Index \{i\}'.format(i=i)\n    with nuke.toNode(sn.name()):\n        n = nuke.toNode('Retime1')\n        n.showControlPanel()\n        n.knob('before').setValue('black')\n        n.knob('after').setValue('black')\n        n.hideControlPanel()\n\n\nl_frame = offset + last\ntn.knob('frame').setValue(l_frame)\n\nprint '\[Info]Nodelist \{nodelist\}'.format(nodelist=nodelist)\nprint '\[Info]Offset \{offset\}'.format(offset=offset)\nprint '\[Info]Output Frame \{l_frame\}'.format(l_frame=l_frame)\n\n" +STARTLINE}
+  addUserKnob {22 set_frame l Set_Frame T "import nuke\n\nroot = nuke.Root()\ntn = nuke.thisNode()\nlast = root.lastFrame()\nnodelist = \[]\noffset = 0\n\ntn\['selected'].setValue(False)\nwith root:\n    for node in nuke.allNodes('Group'):\n        if \"AOV_Layer_Contact_Sheet\" in node.name():\n            nodelist.append(node.fullName())\n    nodelist.sort()\n\n    sn = nuke.selectedNode()\n    for i, node in enumerate(nodelist):\n        if str(sn.name()) == nodelist\[i]:\n            offset = (i + 1)\n            print '\[Info]Selected Node \{sn\}'.format(sn=sn.name())\n            print '\[Info]Index \{i\}'.format(i=i)\n    with nuke.toNode(sn.name()):\n        n = nuke.toNode('Retime1')\n        n.showControlPanel()\n        n.knob('before').setValue('black')\n        n.knob('after').setValue('black')\n        n.hideControlPanel()\n\n    v = sn\['name'].value()\n    node = nuke.tcl(\"value \[topnode %s].name\" % v)\n    read = nuke.toNode(node)\n    read\['after'].setValue('black')\n\n\n\nl_frame = offset + last\ntn.knob('frame').setValue(l_frame)\n\nprint '\[Info]Nodelist \{nodelist\}'.format(nodelist=nodelist)\nprint '\[Info]Offset \{offset\}'.format(offset=offset)\nprint '\[Info]Output Frame \{l_frame\}'.format(l_frame=l_frame)\n\n" +STARTLINE}
   addUserKnob {3 frame l Frame}
   frame 1
  }

@@ -26,6 +26,12 @@ with root:
         n.knob('after').setValue('black')
         n.hideControlPanel()
 
+    v = sn['name'].value()
+    node = nuke.tcl("value [topnode %s].name" % v)
+    read = nuke.toNode(node)
+    read['after'].setValue('black')
+
+
 
 l_frame = offset + last
 tn.knob('frame').setValue(l_frame)
