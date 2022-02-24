@@ -4,8 +4,8 @@ push $cut_paste_input
 Group {
  name AOV_Layer_Contact_Sheet
  selected true
- xpos -84300
- ypos -13765
+ xpos -14356
+ ypos -10754
  addUserKnob {20 User}
  addUserKnob {26 aov_layer_contact_sheet l "AOV Contact Sheet"}
  addUserKnob {20 RLs l "Render Layer Setup" n 1}
@@ -28,27 +28,22 @@ Group {
  Input {
   inputs 0
   name Crypto_Obj
-  xpos -1222
-  ypos -565
+  xpos -1250
+  ypos -765
   number 2
  }
  Input {
   inputs 0
   name Crypto_Matte
-  xpos -1223
-  ypos -686
+  xpos -1250
+  ypos -865
   number 1
  }
  Input {
   inputs 0
   name Render_Layer
   xpos -1030
-  ypos -865
- }
- Dot {
-  name Dot2
-  xpos -1000
-  ypos -760
+  ypos -965
  }
 add_layer {CryptoMaterial CryptoMaterial.red CryptoMaterial.green CryptoMaterial.blue CryptoMaterial.alpha}
  Merge2 {
@@ -59,7 +54,7 @@ add_layer {CryptoMaterial CryptoMaterial.red CryptoMaterial.green CryptoMaterial
   name C_MATT_Merge
   label "mix: \[ expr \[value mix] * 100]%"
   xpos -1030
-  ypos -698
+  ypos -877
  }
 add_layer {CryptoMesh CryptoMesh.red CryptoMesh.green CryptoMesh.blue CryptoMesh.alpha}
  Merge2 {
@@ -70,20 +65,55 @@ add_layer {CryptoMesh CryptoMesh.red CryptoMesh.green CryptoMesh.blue CryptoMesh
   name C_OBJ_MERGE
   label "mix: \[ expr \[value mix] * 100]%"
   xpos -1030
-  ypos -577
+  ypos -777
  }
-set Nf416cc00 [stack 0]
+ Dot {
+  name Dot2
+  xpos -1000
+  ypos -660
+ }
+set Nef0f2000 [stack 0]
  Dot {
   name Dot1
   xpos -340
-  ypos -560
+  ypos -660
+ }
+ AdjBBox {
+  numpixels 200
+  name AdjBBox1
+  xpos -370
+  ypos -565
  }
  NoOp {
   name AOV_Layer_Name_Generator
   xpos -370
-  ypos -515
+  ypos -465
   addUserKnob {20 User}
   addUserKnob {22 addlayer l "Layer Names" T "import nuke as nuke\n\nn = nuke.thisNode()\n\nlayerNameMerge = nuke.toNode(\"AOV_Contactsheet\")\n\ntext_merge = nuke.toNode(\"Text_merge\")\n\nbbox = n.bbox()\n\nlayers = set(\[i.split('.')\[0] for i in n.channels()])\n\nremoveNode = nuke.nodes.Remove()\n\nremoveNode.setInput(0, n)\n\ninNode = removeNode\n\n# create text per layer\n\nfor layer in layers:\n    textNode = nuke.nodes.Text2()\n    textNode\['box'].setValue((bbox.x(), bbox.y(), bbox.x() + bbox.w(), bbox.y() + bbox.h()))\n    textNode\['output'].setValue(layer)\n    textNode\['message'].setValue(layer)\n    textNode\['font_size'].setValue(100)\n    textNode\['global_font_scale'].setValue(1.5)\n    textNode\['xjustify'].setValue(\"left\")\n    textNode\['yjustify'].setValue(\"bottom\")\n    textNode.setInput(0, inNode)\n\n    inNode = textNode\n\n# create contact sheet for text\n\nlayerCC2 = nuke.nodes.LayerContactSheet()\nlayerCC2.knob('showLayerNames').setExpression('parent.nukelayernames')\nlayerCC2.knob('width').setExpression('parent.AOV_Contactsheet.knob.width')\nlayerCC2.knob('height').setExpression('parent.AOV_Contactsheet.knob.height')\nlayerCC2.knob(\"gap\").setValue(1)\nlayerCC2.setInput(0, inNode)\n\n# use Saturation node to show text in all channels\n\nsatNode = nuke.nodes.Saturation(channels='all', saturation=0, mode='Maximum')\n\nsatNode.setInput(0, layerCC2)\n\nmergeNode = nuke.nodes.Merge()\n\nmergeNode.setInput(0, layerNameMerge)\n\nmergeNode.setInput(1, satNode)\n\ntext_merge.setInput(0, mergeNode)\n" +STARTLINE}
+ }
+ NoOp {
+  inputs 0
+  name Frame_Controller
+  xpos -1250
+  ypos 85
+  addUserKnob {20 User}
+  addUserKnob {22 set_frame l Set_Frame T "import nuke\n\nroot = nuke.Root()\ntn = nuke.thisNode()\nlast = root.lastFrame()\nnodelist = \[]\noffset = 0\n\ntn\['selected'].setValue(False)\nwith root:\n    for node in nuke.allNodes('Group'):\n        if \"AOV_Layer_Contact_Sheet\" in node.name():\n            nodelist.append(node.fullName())\n    nodelist.sort()\n\n    sn = nuke.selectedNode()\n    for i, node in enumerate(nodelist):\n        if str(sn.name()) == nodelist\[i]:\n            offset = (i + 1)\n            print '\[Info]Selected Node \{sn\}'.format(sn=sn.name())\n            print '\[Info]Index \{i\}'.format(i=i)\n    with nuke.toNode(sn.name()):\n        n = nuke.toNode('Retime1')\n        n.showControlPanel()\n        n.knob('before').setValue('black')\n        n.knob('after').setValue('black')\n        n.hideControlPanel()\n\n    v = sn\['name'].value()\n    node = nuke.tcl(\"value \[topnode %s].name\" % v)\n    read = nuke.toNode(node)\n    read\['after'].setValue('black')\n\n\n\nl_frame = offset + last\ntn.knob('frame').setValue(l_frame)\n\nprint '\[Info]Nodelist \{nodelist\}'.format(nodelist=nodelist)\nprint '\[Info]Offset \{offset\}'.format(offset=offset)\nprint '\[Info]Output Frame \{l_frame\}'.format(l_frame=l_frame)\n\n" +STARTLINE}
+  addUserKnob {3 frame l Frame}
+  frame 1
+ }
+ Rectangle {
+  inputs 0
+  area {5000 5000 0 0}
+  color {-0.073331 0.185 0.066669 1}
+  color_panelDropped true
+  name Rectangle1
+  xpos -1250
+  ypos -165
+ }
+ Dot {
+  name Dot5
+  xpos -1220
+  ypos -110
  }
  Text {
   inputs 0
@@ -97,22 +127,32 @@ set Nf416cc00 [stack 0]
   box {0 0 3840 2160}
   translate {0 30}
   name Text1
-  xpos -866
-  ypos -306
+  xpos -810
+  ypos -465
+ }
+ Dot {
+  name Dot4
+  xpos -780
+  ypos -360
  }
  Constant {
   inputs 0
   color {0 0.495 1.357027 0}
   name Constant1
-  xpos -1268
-  ypos -330
+  xpos -1250
+  ypos -489
  }
-push $Nf416cc00
+ Dot {
+  name Dot3
+  xpos -1220
+  ypos -360
+ }
+push $Nef0f2000
  FrameHold {
   first_frame 1
   name FrameHold2
   xpos -1030
-  ypos -503
+  ypos -571
   addUserKnob {20 User}
   addUserKnob {22 setFrame l "Set to Current Frame" -STARTLINE T "\{nuke.thisNode()\['first_frame'].setValue(nuke.frame())\}"}
  }
@@ -121,27 +161,32 @@ push $Nf416cc00
   height 2160
   gap 1
   center true
-  showLayerNames {{parent.nukelayernames x1 1 x101 1 x1001 1 x1022 1 x1024 1 x1025 1 x1117 1 x1118 1 x1431 1 x1432 1 1}}
+  showLayerNames {{parent.nukelayernames x1 1 x101 1 x1001 1 x1022 1 x1024 1 x1025 1 x1036 1 x1038 1 x1117 1 x1118 1 x1431 1 x1432 1 1}}
   name AOV_Contactsheet
   xpos -1030
-  ypos -429
+  ypos -465
  }
  Merge {
   inputs 2+1
   name Text_merge
   xpos -1030
-  ypos -306
+  ypos -365
+ }
+ ChannelMerge {
+  inputs 2
+  name ChannelMerge1
+  xpos -1030
+  ypos -127
  }
  Reformat {
   resize fit
-  black_outside true
   name Reformat1
   xpos -1030
-  ypos -221
+  ypos -21
  }
  Retime {
   input.last 1
-  output.first 1432
+  output.first 1036
   output.last {{parent.Frame_Controller.knob.frame}}
   output.last_lock true
   before black
@@ -149,21 +194,11 @@ push $Nf416cc00
   time ""
   name Retime1
   xpos -1030
-  ypos -96
+  ypos 85
  }
  Output {
   name Output1
   xpos -1030
-  ypos -18
- }
- NoOp {
-  inputs 0
-  name Frame_Controller
-  xpos -871
-  ypos -165
-  addUserKnob {20 User}
-  addUserKnob {22 set_frame l Set_Frame T "import nuke\n\nroot = nuke.Root()\ntn = nuke.thisNode()\nlast = root.lastFrame()\nnodelist = \[]\noffset = 0\n\ntn\['selected'].setValue(False)\nwith root:\n    for node in nuke.allNodes('Group'):\n        if \"AOV_Layer_Contact_Sheet\" in node.name():\n            nodelist.append(node.fullName())\n    nodelist.sort()\n\n    sn = nuke.selectedNode()\n    for i, node in enumerate(nodelist):\n        if str(sn.name()) == nodelist\[i]:\n            offset = (i + 1)\n            print '\[Info]Selected Node \{sn\}'.format(sn=sn.name())\n            print '\[Info]Index \{i\}'.format(i=i)\n    with nuke.toNode(sn.name()):\n        n = nuke.toNode('Retime1')\n        n.showControlPanel()\n        n.knob('before').setValue('black')\n        n.knob('after').setValue('black')\n        n.hideControlPanel()\n\n    v = sn\['name'].value()\n    node = nuke.tcl(\"value \[topnode %s].name\" % v)\n    read = nuke.toNode(node)\n    read\['after'].setValue('black')\n\n\n\nl_frame = offset + last\ntn.knob('frame').setValue(l_frame)\n\nprint '\[Info]Nodelist \{nodelist\}'.format(nodelist=nodelist)\nprint '\[Info]Offset \{offset\}'.format(offset=offset)\nprint '\[Info]Output Frame \{l_frame\}'.format(l_frame=l_frame)\n\n" +STARTLINE}
-  addUserKnob {3 frame l Frame}
-  frame 1
+  ypos 235
  }
 end_group
